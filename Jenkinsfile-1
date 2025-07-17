@@ -12,4 +12,20 @@ pipeline {
       }
     }
   }
+  post {
+        always {
+            emailext (
+                subject: "Pipeline Status: ${currentBuild.result}",
+                body: """<html>
+                            <body>
+                                <h3>Jenkins Pipeline Notification</h3>
+                                <p>Status: <strong>${currentBuild.result}</strong></p>
+                            </body>
+                        </html>""",
+                mimeType: 'text/html',
+                to: "${DEV_EMAIL}",
+                from: 'rishirajshinde1610@gmail.com'
+            )
+        }
+    }
 }
