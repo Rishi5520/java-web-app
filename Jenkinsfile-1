@@ -4,12 +4,6 @@ pipeline {
     environment {
         DEV_EMAIL = 'rishirajshinde1610@gmail.com'
     }
-
-    tools {
-        // Optional: if you want to ensure Maven is available
-        // maven 'Maven 3.8.1'
-    }
-
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
     }
