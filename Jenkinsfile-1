@@ -1,25 +1,37 @@
 pipeline {
-  agent { label 'aws_live_server' }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  stages {
-    stage('Scan') {
-      steps {
-        withSonarQubeEnv(installationName: 'sq1') { 
-          sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-        }
-      }
+    agent { label 'aws_live_server' }
+
+    environment {
+        DEV_EMAIL = 'rishirajshinde1610@gmail.com'
     }
-  }
-  post {
+
+    tools {
+        // Optional: if you want to ensure Maven is available
+        // maven 'Maven 3.8.1'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+
+    stages {
+        stage('Scan') {
+            steps {
+                withSonarQubeEnv('sq1') {
+                    sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                }
+            }
+        }
+    }
+
+    post {
         always {
-            emailext (
-                subject: "Pipeline Status: ${currentBuild.result}",
+            emailext(
+                subject: "Pipeline Status: ${currentBuild.result ?: 'SUCCESS'}",
                 body: """<html>
                             <body>
                                 <h3>Jenkins Pipeline Notification</h3>
-                                <p>Status: <strong>${currentBuild.result}</strong></p>
+                                <p>Status: <strong>${currentBuild.result ?: 'SUCCESS'}</strong></p>
                             </body>
                         </html>""",
                 mimeType: 'text/html',
